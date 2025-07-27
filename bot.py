@@ -12,9 +12,36 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 async def on_ready():
     print(f'Logged in as {bot.user.name}')
 
+@bot.event
+async def on_member_join(member):
+    # Mengirim pesan ucapan selamat
+    for channel in member.guild.text_channels:
+        await channel.send(f'Selamat datang, {member.mention}!')
+
+@bot.event
+async def on_message(message):
+    if message.author == bot.user:
+        return 
+    #cek dan hapus tautan
+    if "https://" in message.content:
+        # simpan data pengguna
+        print(f"user {message.author} ({message.author.id}) mengirim tautan: {message.content}")
+        await message.delete()
+        await message.channel.send("nggak boleh ngirim tautan di sini!")
+        await message.guild.ban(message.author, reason="Mengirim tautan")
+
+        await bot.process_commands(message)
+
+        
 @bot.command()
 async def start(ctx):
     await ctx.send("Hi! I'm a chat manager bot!")
+
+@bot.event
+async def on_member_join(member):
+    # Mengirim pesan ucapan selamat
+    for channel in member.guild.text_channels:
+        await channel.send(f'Selamat datang, {member.mention}!')
 
 @bot.command()
 @commands.has_permissions(ban_members=True)
